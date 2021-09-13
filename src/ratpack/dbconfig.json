@@ -1,0 +1,8 @@
+{
+  "database": {
+    "host": "jdbc:mysql:localhost:location_data",
+    "user": "LocationtService",
+    "password": "test",
+    "driver": "com.mysql.jdbc"
+  }
+}

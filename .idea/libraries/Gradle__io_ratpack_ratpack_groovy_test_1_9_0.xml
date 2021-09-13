@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: io.ratpack:ratpack-groovy-test:1.9.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.ratpack/ratpack-groovy-test/1.9.0/8deba5880a6a113a215c6baeffb68f34afedd6d6/ratpack-groovy-test-1.9.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.ratpack/ratpack-groovy-test/1.9.0/acb652371345d5b189027c6c5f6ae835e4e9a90f/ratpack-groovy-test-1.9.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

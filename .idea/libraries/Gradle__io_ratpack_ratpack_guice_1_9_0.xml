@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: io.ratpack:ratpack-guice:1.9.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.ratpack/ratpack-guice/1.9.0/9dd76705ce17cfe491fb08fd9aef26cd034426bc/ratpack-guice-1.9.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.ratpack/ratpack-guice/1.9.0/ed6f1351544d75a743a6608216a73a6a170c6bf1/ratpack-guice-1.9.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
