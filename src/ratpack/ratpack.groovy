@@ -4,6 +4,11 @@ import groovy.sql.Sql
 import static groovy.json.JsonOutput.toJson
 import static ratpack.groovy.Groovy.ratpack
 
+//TODO
+// - Move each handler to it's own file (ie 'locationsEndpoint')?
+// - Consider writing separate functions to make handler code less repetitive
+// - Add PATCH handlers
+
 ratpack {
     def db = [url:'jdbc:mysql://localhost/location_data', user:'LocationtService', password:'test', driver:'com.mysql.cj.jdbc.Driver']
     def sql = Sql.newInstance(db.url, db.user, db.password, db.driver)
@@ -11,41 +16,79 @@ ratpack {
     def jsonParser = new JsonSlurper()
 
     handlers {
+        // /users
         prefix("users") {
+            get("list") {
+                render toJson(sql.rows("SELECT * FROM users"))
+            }
+
             path {
                 byMethod {
-                    get("list") { //TO-DO: This doesn't work under the path closure
-                        sql.rows("SELECT * FROM users").collect { result ->
-                            render toJson(result)
-                        }
-                    }
                     get {
                         String username = request.queryParams.username
 
-                        sql.rows("SELECT * FROM users WHERE username = ${username}").collect { result ->
-                            render toJson(result)
-                        }
+                        render toJson(sql.rows("SELECT * FROM users WHERE username = ${username}"))
                     }
-                    put {
+
+                    post {
                         request.getBody().then {userData ->
                             def userJson = jsonParser.parse(userData.inputStream)
-                            sql.executeInsert("INSERT INTO users (fname, lname) VALUES (${userJson.fname}, ${userJson.lname})").collect {
-                                render toJson(it)
-                            }
+                            render toJson(sql.executeInsert("INSERT INTO users (fname, lname) VALUES (${userJson.fname}, ${userJson.lname})"))
                         }
                     }
                 }
             }
         }
+
+        // /locations
         prefix("locations") {
             get("list") {
-                sql.rows("SELECT * FROM locations").collect { result ->
-                    render toJson(result)
+                render toJson(sql.rows("SELECT * FROM locations"))
+            }
+
+            path {
+                byMethod {
+                    get {
+                        String username = request.queryParams.username
+
+                        render toJson(sql.rows("SELECT * FROM locations WHERE username = ${username}"))
+                    }
+                    post {
+                        request.getBody().then {locationData ->
+                            def locationJson = jsonParser.parse(locationData.inputStream)
+                            render toJson(sql.executeInsert("INSERT INTO locations (name) VALUES (${locationJson.name})"))
+                        }
+                    }
                 }
             }
         }
+
+        // /devices
+        //TODO Finish /devices
+        // - Actually create the devices table
+        // - Adjust POST handler
+        //    - Make it possible to create multiple devices at once
+        // - Add more ways to query (user, location, ID)
         prefix("devices") {
-            get {}
+            get("list") {
+                render toJson(sql.rows("SELECT * FROM devices"))
+            }
+
+            path {
+                byMethod {
+                    get {
+                        String username = request.queryParams.username
+
+                        render toJson(sql.rows("SELECT * FROM devices WHERE username = ${username}"))
+                    }
+//                    post {
+//                        request.getBody().then {deviceData ->
+//                            def deviceJson = jsonParser.parse(deviceData.inputStream)
+//                            render toJson(sql.executeInsert("INSERT INTO devices (fname, lname) VALUES (${userJson.fname}, ${userJson.lname})"))
+//                        }
+//                    }
+                }
+            }
         }
     }
 }
