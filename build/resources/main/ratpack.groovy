@@ -1,68 +1,57 @@
-import groovy.json.JsonBuilder
-import groovy.json.JsonParser
 import groovy.json.JsonSlurper
-import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-
-import java.sql.ResultSet
 
 import static groovy.json.JsonOutput.toJson
 import static ratpack.groovy.Groovy.ratpack
-//class LoadDriver {
-//    static void main(String[] args) {
-//        try {
-//            // The newInstance() call is a work around for some
-//            // broken Java implementations
-//
-//            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-//        } catch (Exception ex) {
-//            // handle the error
-//        }
-//    }
-//}
+//TODO
+// - Move each handler to it's own file (ie 'locationsEndpoint')?
+// - Consider writing separate functions to make handler code less repetitive
+// - Add PATCH handlers
+
+
 
 ratpack {
-    def db = [url:'jdbc:mysql://localhost/location_data', user:'LocationtService', password:'test', driver:'com.mysql.cj.jdbc.Driver']
+    def db = [url: 'jdbc:mysql://localhost/location_data', user: 'LocationtService', password: 'test', driver: 'com.mysql.cj.jdbc.Driver']
     def sql = Sql.newInstance(db.url, db.user, db.password, db.driver)
-
     def jsonParser = new JsonSlurper()
 
+
+    UsersEndpoint usersEndpoint = new UsersEndpoint(sql, jsonParser)
+    LocationsEndpoint locationsEndpoint = new LocationsEndpoint(sql, jsonParser)
+
     handlers {
-        prefix("users") {
+        // /users
+        prefix("users", usersEndpoint)
+
+        // /locations
+        prefix("locations", locationsEndpoint)
+
+        // /devices
+        //TODO Finish /devices
+        // - Actually create the devices table
+        // - Adjust POST handler
+        //    - Make it possible to create multiple devices at once
+        // - Add more ways to query (user, location, ID)
+        prefix("devices") {
+            get("list") {
+                render toJson(sql.rows("SELECT * FROM devices"))
+            }
+
             path {
                 byMethod {
-                    get("list") { //TO-DO: This doesn't work under the path closure
-                        sql.rows("SELECT * FROM users").collect { result ->
-                            render toJson(result)
-                        }
-                    }
                     get {
                         String username = request.queryParams.username
 
-                        sql.rows("SELECT * FROM users WHERE username = ${username}").collect { result ->
-                            render toJson(result)
-                        }
+                        render toJson(sql.rows("SELECT * FROM devices WHERE username = ${username}"))
                     }
-                    put {
-                        request.getBody().then {userData ->
-                            def userJson = jsonParser.parse(userData.inputStream)
-                            sql.executeInsert("INSERT INTO users (fname, lname) VALUES (${userJson.fname}, ${userJson.lname})").collect {
-                                render toJson(it)
-                            }
-                        }
-                    }
+//                    post {
+//                        request.getBody().then {deviceData ->
+//                            def deviceJson = jsonParser.parse(deviceData.inputStream)
+//                            render toJson(sql.executeInsert("INSERT INTO devices (fname, lname) VALUES (${userJson.fname}, ${userJson.lname})"))
+//                        }
+//                    }
                 }
             }
-        }
-        prefix("locations") {
-            get("list") {
-                sql.rows("SELECT * FROM locations").collect { result ->
-                    render toJson(result)
-                }
-            }
-        }
-        prefix("devices") {
-            get {}
         }
     }
 }
